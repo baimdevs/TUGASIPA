@@ -2,422 +2,329 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arsip 10-2 — Untuk Tugas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🀄 Mahjong Spin Gacha</title>
 <style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   :root{
-    --paper:#EFE9DC;
-    --paper-2:#E6DFCC;
-    --ink:#23262B;
-    --ink-soft:#5B5A52;
-    --line:#D6CDB4;
-    --ipa:#4C7A64;
-    --ipa-tint:#E4ECE6;
-    --geo:#B9822F;
-    --geo-tint:#F1E6D2;
-    --stamp:#3B4A82;
-    --stamp-tint:#E7E9F3;
+    padding-top: env(safe-area-inset-top,0px);
+    padding-bottom: env(safe-area-inset-bottom,0px);
   }
-  *{ box-sizing:border-box; }
-  html{ -webkit-font-smoothing:antialiased; }
-  body{
-    margin:0;
-    background:var(--paper);
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
-    background-size: 22px 22px;
-    color:var(--ink);
-    font-family:'Inter', -apple-system, sans-serif;
-    padding:48px 18px 80px;
+  body {
+    min-height: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    padding: 16px 14px 26px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 50% -10%, #1f7a52 0%, #0d3b2a 55%, #061a13 100%);
+    color: #fff; -webkit-tap-highlight-color: transparent; overflow-x: hidden;
   }
-  h1,h2{ font-family:'Source Serif 4', Georgia, serif; margin:0; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; width:min(92vw,460px);
+    padding:10px 16px; border-radius:14px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.08);
+    font-size:clamp(.78rem,2.8vw,.92rem); }
+  .topbar .label{ color:#8fc7ab; font-size:.78em; letter-spacing:.08em; text-transform:uppercase; }
+  .topbar .value{ color:#ffd75e; font-weight:800; font-size:1.18em; }
+  .topbar .value.low{ color:#fca5a5; animation:lowPulse 1s ease-in-out infinite; }
+  @keyframes lowPulse{ 50%{opacity:.5;} }
+  h1{ font-size:clamp(1rem,3.6vw,1.4rem); font-weight:800; letter-spacing:.1em; color:#d9f2e5;
+    text-shadow:0 2px 10px rgba(0,0,0,.7); }
 
-  .sheet{ max-width:640px; margin:0 auto; }
+  .board{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(6px,1.6vw,10px);
+    width:min(92vw,460px); padding:clamp(10px,2.4vw,16px); border-radius:20px;
+    background:linear-gradient(160deg,#16704c,#0a3527 70%);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.09), inset 0 2px 22px rgba(0,0,0,.45), 0 20px 45px rgba(0,0,0,.55); }
+  .board.shake{ animation:boardShake .45s ease; }
+  @keyframes boardShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
 
-  /* ---------- site banner & footer ---------- */
-  .site-banner{
-    text-align:center;
-    margin-bottom:28px;
-  }
-  .site-banner .site-name{
-    font-family:'Space Mono', monospace;
-    font-size:0.78rem;
-    font-weight:700;
-    letter-spacing:0.06em;
-    color:var(--stamp);
-  }
-  .site-banner .site-tag{
-    font-size:0.8rem;
-    color:var(--ink-soft);
-    margin-top:2px;
-  }
-  .site-footer{
-    max-width:640px;
-    margin:36px auto 0;
-    text-align:center;
-    font-size:0.78rem;
-    color:var(--ink-soft);
-  }
-  .site-footer .owner{ color:var(--ink); font-weight:600; }
+  .cell{ position:relative; aspect-ratio:1/1; border-radius:13%; overflow:hidden;
+    background:linear-gradient(180deg,#fffdf7 0%,#f5efdd 55%,#e8dfc6 100%);
+    box-shadow:0 5px 0 #c2b79a, 0 9px 16px rgba(0,0,0,.45), inset 0 1px 0 #fff, inset 0 -2px 3px rgba(0,0,0,.07); }
+  .cell .back,.cell .face{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .cell .back{ background:repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 6px, rgba(255,255,255,0) 6px 12px),
+    linear-gradient(145deg,#1a7a54 0,#0f5036 100%); color:rgba(255,255,255,.3); font-size:1.5em; font-weight:900; }
+  .cell .face{ display:none; }
+  .cell.rolling .back{ display:none; } .cell.rolling .face{ display:flex; animation:rollShake .07s infinite; }
+  @keyframes rollShake{ 0%{transform:translate(0,0)} 25%{transform:translate(-1px,1px)} 50%{transform:translate(1px,-1px)} 75%{transform:translate(-1px,-1px)} }
+  .cell.revealed .back{ display:none; } .cell.revealed .face{ display:flex; animation:pop .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop{ 0%{transform:scale(.7);opacity:0} 60%{transform:scale(1.12)} 100%{transform:scale(1);opacity:1} }
+  .cell.locked{ animation:lockFlash .3s ease-out; }
+  @keyframes lockFlash{ 0%{filter:brightness(2.2)} 100%{filter:brightness(1)} }
+  .cell.matched{ outline:3px solid #ffd75e; box-shadow:0 0 18px #ffd75e, 0 0 0 3px rgba(255,215,94,.5); animation:matchPulse .8s ease-in-out infinite alternate; }
+  @keyframes matchPulse{ from{outline-color:#ffd75e} to{outline-color:#fff3b0} }
 
-  /* ---------- profile ---------- */
-  .card-profile{
-    background:var(--ink);
-    color:var(--paper);
-    border-radius:4px;
-    padding:26px 28px;
-    margin-bottom:52px;
-    position:relative;
-    overflow:hidden;
-  }
-  .card-profile::after{
-    content:"";
-    position:absolute;
-    right:-40px; top:-40px;
-    width:140px; height:140px;
-    border-radius:50%;
-    background:conic-gradient(from 90deg, var(--ipa), var(--geo), var(--stamp), var(--ipa));
-    opacity:0.18;
-  }
-  .card-profile h1{ font-size:1.5rem; font-weight:600; letter-spacing:0.01em; }
-  .card-profile .meta{
-    margin-top:8px;
-    font-family:'Space Mono', monospace;
-    font-size:0.78rem;
-    color:#C8C4B6;
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-  }
+  .badge{ width:72%; height:72%; display:flex; align-items:center; justify-content:center; font-weight:800; text-align:center; }
+  .badge.dot{ border-radius:50%; background:radial-gradient(circle,#dbeafe,#93c5fd); color:#1e3a8a; font-size:1.35em; }
+  .badge.bam{ border-radius:40%/60%; background:linear-gradient(180deg,#bbf7d0,#4ade80); color:#14532d; font-size:1.15em; width:46%; height:88%; }
+  .badge.char{ border-radius:9px; flex-direction:column; gap:1px; background:linear-gradient(135deg,#fde68a,#fbbf24); color:#78350f; }
+  .badge.char .num{ font-size:1.1em; } .badge.char .wan{ font-size:.55em; opacity:.85; }
+  .badge.honor{ background:none; font-size:1.9em; }
+  .badge.scatter{ width:76%; height:76%; background:conic-gradient(from 0deg,#fde68a,#f59e0b,#fde68a);
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    animation:spinStar 3s linear infinite; }
+  @keyframes spinStar{ to{ transform:rotate(360deg); } }
 
-  /* ---------- personal information ---------- */
-  .infocard{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:22px 24px;
-    margin-bottom:52px;
-  }
-  .infocard h2{ font-size:1.05rem; font-weight:600; margin-bottom:16px; }
-  .field-row{
-    display:flex;
-    gap:18px;
-    padding:11px 0;
-    border-top:1px solid var(--paper-2);
-  }
-  .field-row:first-of-type{ border-top:none; }
-  .field-label{
-    font-family:'Space Mono', monospace;
-    font-size:0.7rem;
-    letter-spacing:0.03em;
-    color:var(--ink-soft);
-    width:110px;
-    flex-shrink:0;
-    padding-top:2px;
-  }
-  .field-value{ font-size:0.9rem; color:var(--ink); }
-  .field-value.muted{ color:var(--ink-soft); font-style:italic; }
-  .redacted{
-    display:inline-block;
-    background:var(--ink);
-    color:transparent;
-    border-radius:2px;
-    padding:2px 8px;
-    user-select:none;
-    position:relative;
-    top:1px;
-  }
-  .field-note{
-    font-size:0.76rem;
-    color:var(--ink-soft);
-    margin-top:4px;
-  }
-  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
-  .chip{
-    font-size:0.8rem;
-    background:var(--stamp-tint);
-    color:var(--stamp);
-    padding:4px 11px;
-    border-radius:999px;
-  }
+  .cell.revealed.common{ box-shadow:0 0 0 3px #94a3b8,0 0 22px rgba(148,163,184,.7),0 5px 0 #64748b,0 9px 16px rgba(0,0,0,.4); }
+  .cell.revealed.rare{ box-shadow:0 0 0 3px #3b82f6,0 0 28px rgba(59,130,246,.85),0 5px 0 #1d4ed8,0 9px 16px rgba(0,0,0,.4); }
+  .cell.revealed.epic{ box-shadow:0 0 0 3px #a855f7,0 0 34px rgba(168,85,247,.95),0 5px 0 #7e22ce,0 9px 16px rgba(0,0,0,.4); }
+  .cell.revealed.legendary{ box-shadow:0 0 0 4px #f59e0b,0 0 44px rgba(245,158,11,1),0 0 80px rgba(245,158,11,.75),0 5px 0 #b45309,0 9px 16px rgba(0,0,0,.4);
+    animation:legendaryPulse 1.1s ease-in-out infinite alternate; }
+  .cell.revealed.scatter{ box-shadow:0 0 0 4px #fbbf24,0 0 50px rgba(251,191,36,1),0 5px 0 #b45309,0 9px 16px rgba(0,0,0,.4); }
+  @keyframes legendaryPulse{ from{box-shadow:0 0 0 4px #f59e0b,0 0 30px rgba(245,158,11,.8),0 0 60px rgba(245,158,11,.5),0 5px 0 #b45309}
+    to{box-shadow:0 0 0 4px #fbbf24,0 0 55px rgba(251,191,36,1),0 0 100px rgba(245,158,11,.9),0 5px 0 #b45309} }
 
-  /* ---------- subject section with binder tab ---------- */
-  .subject{
-    position:relative;
-    margin:0 0 56px;
-    padding-top:22px;
-  }
-  .subject .tab{
-    display:inline-block;
-    font-family:'Space Mono', monospace;
-    font-size:0.72rem;
-    font-weight:700;
-    letter-spacing:0.04em;
-    color:#fff;
-    padding:6px 14px 6px 12px;
-    border-radius:3px 10px 3px 3px;
-    position:relative;
-    margin-bottom:14px;
-  }
-  .subject.ipa .tab{ background:var(--ipa); }
-  .subject.geo .tab{ background:var(--geo); }
-  .subject h2{ font-size:1.2rem; font-weight:600; margin-bottom:2px; }
-  .subject .desc{ color:var(--ink-soft); font-size:0.85rem; margin-bottom:18px; }
+  .result{ min-height:2.3em; padding:9px 20px; border-radius:12px; font-size:clamp(.82rem,2.9vw,1rem); font-weight:800;
+    text-align:center; width:min(92vw,460px); color:#cbd5e1; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.08); }
+  .result.win{ background:rgba(34,197,94,.18); color:#86efac; border-color:rgba(34,197,94,.4); }
+  .result.lose{ background:rgba(239,68,68,.15); color:#fca5a5; border-color:rgba(239,68,68,.35); }
+  .result.big-win{ background:linear-gradient(90deg,rgba(245,158,11,.25),rgba(251,191,36,.4),rgba(245,158,11,.25));
+    color:#fde68a; border-color:rgba(245,158,11,.7); animation:legendGlow 1s ease-in-out infinite alternate; }
+  @keyframes legendGlow{ from{box-shadow:0 0 12px rgba(245,158,11,.4)} to{box-shadow:0 0 32px rgba(245,158,11,.95)} }
 
-  .stack{
-    max-height:460px;
-    overflow-y:auto;
-    padding:6px 6px 6px 2px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-  .item{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:14px;
-    transform:rotate(var(--tilt,0deg));
-    transition:transform .18s ease, box-shadow .18s ease;
-  }
-  .item:nth-child(odd){ --tilt:-0.5deg; }
-  .item:nth-child(even){ --tilt:0.45deg; }
-  .item:hover, .item:focus-within{
-    transform:rotate(0deg);
-    box-shadow:0 6px 18px rgba(30,25,10,0.12);
-  }
-  .item .kind{
-    font-family:'Space Mono', monospace;
-    font-size:0.66rem;
-    font-weight:700;
-    letter-spacing:0.03em;
-    padding:2px 8px;
-    border-radius:3px;
-    display:inline-block;
-    margin-bottom:9px;
-  }
-  .subject.ipa .item .kind{ background:var(--ipa-tint); color:var(--ipa); }
-  .subject.geo .item .kind{ background:var(--geo-tint); color:var(--geo); }
-  .item .name{ font-size:0.88rem; color:var(--ink-soft); margin:0 0 10px; }
-  .item iframe, .item img{ width:100%; border:none; border-radius:4px; display:block; background:#111; }
-  .item iframe{ height:400px; }
-  .item img{ max-height:400px; object-fit:contain; }
+  .controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .btn{ padding:12px 26px; border:none; border-radius:999px; font:inherit; font-size:clamp(.82rem,2.9vw,.95rem);
+    font-weight:800; letter-spacing:.06em; cursor:pointer; transition:transform .1s,filter .15s,opacity .2s; }
+  .btn-spin{ color:#06301f; background:linear-gradient(180deg,#7ff0b8,#2fbf80); box-shadow:0 4px 0 #1c7d53,0 8px 20px rgba(0,0,0,.5); }
+  .btn-spin:active:not(:disabled){ transform:translateY(3px); box-shadow:0 1px 0 #1c7d53; }
+  .btn-spin:disabled{ opacity:.35; cursor:not-allowed; filter:grayscale(.6); }
+  .btn-reset{ color:#fff; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); box-shadow:0 3px 0 rgba(0,0,0,.3); }
+  .btn-reset:active:not(:disabled){ transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.3); }
+  .btn-reset:disabled{ opacity:.4; cursor:not-allowed; }
 
-  .empty{
-    border:1px dashed var(--line);
-    border-radius:6px;
-    padding:26px 18px;
-    text-align:center;
-    color:var(--ink-soft);
-    font-size:0.85rem;
-    background:rgba(255,255,255,0.4);
-  }
+  .inv-panel{ width:min(92vw,460px); padding:12px 16px; border-radius:14px; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.08); }
+  .inv-panel h3{ font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:#8fc7ab; margin-bottom:8px; }
+  .inv-list{ display:flex; flex-wrap:wrap; gap:6px; max-height:120px; overflow-y:auto; }
+  .inv-item{ display:flex; align-items:center; gap:6px; padding:5px 10px; border-radius:8px; font-size:.72rem; font-weight:700;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); }
+  .inv-item.common{ border-color:rgba(148,163,184,.5); color:#cbd5e1; }
+  .inv-item.rare{ border-color:rgba(59,130,246,.6); color:#93c5fd; }
+  .inv-item.epic{ border-color:rgba(168,85,247,.6); color:#d8b4fe; }
+  .inv-item.legendary{ border-color:rgba(245,158,11,.7); color:#fcd34d; background:rgba(245,158,11,.12); }
+  .inv-item.scatter{ border-color:rgba(251,191,36,.8); color:#fef08a; background:rgba(251,191,36,.15); }
+  .inv-empty{ font-size:.78rem; color:rgba(255,255,255,.3); font-style:italic; }
 
-  /* ---------- links / community as a stamp sheet ---------- */
-  .stampsheet{ margin-bottom:12px; }
-  .stampsheet h2{ font-size:1.05rem; font-weight:600; margin-bottom:14px; }
-  .stamp-row{ display:flex; flex-direction:column; gap:9px; }
-  .stamp{
-    background:var(--stamp-tint);
-    border:1px solid #C7CBE3;
-    border-radius:5px;
-    padding:11px 15px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    text-decoration:none;
-    color:var(--stamp);
-    font-size:0.9rem;
-    font-weight:500;
-  }
-  .stamp:hover{ background:#dfe2f2; }
-  .stamp .dot{
-    width:6px; height:6px; border-radius:50%;
-    background:var(--stamp); flex-shrink:0;
-  }
-  .stamp span.label{ flex:1; margin-left:10px; }
-
-  .howto{
-    max-width:640px;
-    margin:54px auto 0;
-    border-top:1px solid var(--line);
-    padding-top:18px;
-    font-size:0.78rem;
-    color:var(--ink-soft);
-    line-height:1.7;
-  }
-  .howto strong{ color:var(--ink); }
-  .howto code{
-    font-family:'Space Mono', monospace;
-    background:var(--paper-2);
-    padding:1px 6px;
-    border-radius:3px;
-    font-size:0.76rem;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .item{ transition:none; }
-  }
+  .confetti{ position:fixed; top:-14px; pointer-events:none; z-index:999; }
+  @keyframes fall{ to{ transform:translateY(105vh) rotate(720deg); opacity:0; } }
+  .screen-flash{ position:fixed; inset:0; pointer-events:none; z-index:998; animation:screenFlash .55s ease-out forwards; }
+  .screen-flash.win{ background:radial-gradient(circle,rgba(34,197,94,.45),transparent 70%); }
+  .screen-flash.lose{ background:radial-gradient(circle,rgba(239,68,68,.5),transparent 70%); }
+  .screen-flash.big{ background:radial-gradient(circle,rgba(245,158,11,.7),transparent 70%); }
+  @keyframes screenFlash{ 0%{opacity:1} 100%{opacity:0} }
 </style>
 </head>
 <body>
-<div class="sheet">
-
-  <div class="site-banner">
-    <div class="site-name">ARSIP 10-2</div>
-    <div class="site-tag">Untuk tugas</div>
+  <div class="topbar">
+    <div><span class="label">Saldo</span><br><span class="value" id="balance">10.00</span>
+      <span style="font-size:.85em;color:#ffd75e;">token</span></div>
+    <div style="text-align:right;"><span class="label">Total Spin</span><br><span class="value" id="spinCount">0</span></div>
+  </div>
+  <h1>🀄 Mahjong Spin</h1>
+  <div class="board" id="board"></div>
+  <div class="result" id="result">Tekan SPIN untuk mulai (0.20 token)</div>
+  <div class="controls">
+    <button class="btn btn-spin" id="spinBtn">🎰 SPIN · 0.20</button>
+    <button class="btn btn-reset" id="resetBtn">🔄 Reset</button>
+  </div>
+  <div class="inv-panel">
+    <h3>📦 Koleksi Menang</h3>
+    <div class="inv-list" id="invList"><span class="inv-empty">Belum ada item</span></div>
   </div>
 
-  <div class="card-profile">
-    <h1>Rikaya Nurcahya</h1>
-    <div class="meta">
-      <span>Kelas X-2</span>
-      <span>Tanpa jabatan organisasi</span>
+    <div style="display:none;">
+    <audio autoplay loop>
+      <source src="music/mp.mp3" type="audio/mpeg">
+    </audio> 
     </div>
-  </div>
+<script>
+/* ===== Simbol dibuat sendiri pakai CSS/badge — tanpa gambar/asset luar ===== */
+const SYMBOLS = [
+  {id:'d1',suit:'dot',label:'1',rarity:'common'},
+  {id:'d2',suit:'dot',label:'2',rarity:'common'},
+  {id:'d3',suit:'dot',label:'3',rarity:'common'},
+  {id:'b1',suit:'bam',label:'1',rarity:'common'},
+  {id:'b2',suit:'bam',label:'2',rarity:'common'},
+  {id:'b3',suit:'bam',label:'3',rarity:'common'},
+  {id:'c1',suit:'char',label:'1',rarity:'common'},
+  {id:'c2',suit:'char',label:'2',rarity:'common'},
+  {id:'c3',suit:'char',label:'3',rarity:'common'},
+  {id:'we',suit:'honor',label:'東',rarity:'common',color:'#7c3aed'},
+  {id:'d5',suit:'dot',label:'5',rarity:'rare'},
+  {id:'b5',suit:'bam',label:'5',rarity:'rare'},
+  {id:'c5',suit:'char',label:'5',rarity:'rare'},
+  {id:'ws',suit:'honor',label:'南',rarity:'rare',color:'#7c3aed'},
+  {id:'dg',suit:'honor',label:'發',rarity:'epic',color:'#16a34a'},
+  {id:'dr',suit:'honor',label:'中',rarity:'legendary',color:'#dc2626'},
+  {id:'sc',suit:'scatter',label:'',rarity:'scatter'},
+];
+const TIER_WEIGHT = {common:60,rare:28,epic:8,legendary:3,scatter:1};
+const REWARD = {common:{base:.15,extra:.05},rare:{base:.6,extra:.15},epic:{base:2.5,extra:.75},
+  legendary:{base:6,extra:1.5},scatter:{base:4,extra:1.5}};
+const CELLS = 16, COST = 0.20, START_BALANCE = 10.00;
 
-  <!-- INFORMASI PRIBADI -->
-  <div class="infocard">
-    <h2>Informasi Pribadi</h2>
-    <div class="field-row">
-      <div class="field-label">SEKOLAH</div>
-      <div class="field-value">SMA Negeri 2 Cibinong</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">PRESTASI</div>
-      <div class="field-value muted">Belum diisi</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">ALAMAT</div>
-      <div>
-        <span class="redacted">Cibinong, Jawa Barat</span>
-        <p class="field-note">Alamat lengkap disensor demi privasi.</p>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">PENGALAMAN</div>
-      <div class="field-value">Pernah melakukan studi kasus psikologi.</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">SKILL</div>
-      <div class="chip-row">
-        <span class="chip">IT</span>
-      </div>
-    </div>
-  </div>
+const pool = (() => {
+  const byTier = {};
+  SYMBOLS.forEach(s => (byTier[s.rarity] ??= []).push(s));
+  const out = [];
+  SYMBOLS.forEach(s => out.push({sym:s, weight: TIER_WEIGHT[s.rarity] / byTier[s.rarity].length}));
+  return out;
+})();
+function weightedPick(){
+  const total = pool.reduce((a,p)=>a+p.weight,0);
+  let r = Math.random()*total;
+  for(const p of pool){ if((r-=p.weight)<=0) return p.sym; }
+  return pool[0].sym;
+}
 
-  <!-- STRUKTUR ORGANISASI KELAS -->
-  <div class="infocard">
-    <h2>Struktur Organisasi Kelas</h2>
-    <div class="field-row">
-      <div class="field-label">WALI KELAS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">KETUA KELAS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">SEKERTARIS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">BENDAHARA</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-  </div>
+let balance = START_BALANCE, spinCount = 0, spinning = false, inventory = [];
+const boardEl=document.getElementById('board'), balanceEl=document.getElementById('balance'),
+  spinCntEl=document.getElementById('spinCount'), resultEl=document.getElementById('result'),
+  spinBtn=document.getElementById('spinBtn'), resetBtn=document.getElementById('resetBtn'),
+  invList=document.getElementById('invList');
 
-  <!-- TUGAS IPA -->
-  <section class="subject ipa">
-    <span class="tab">IPA</span>
-    <h2>Tugas IPA</h2>
-    <p class="desc">Geser ke bawah untuk melihat semua file.</p>
-    <div class="stack">
-      <div class="item">
-        <span class="kind">Dokumen</span>
-        <p class="name">PPT Tugas IPA</p>
-        <iframe src="https://drive.google.com/file/d/1UI0yVtQo6VTBmqqTphPCt8oC8uHN9gmk/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 1</p>
-        <iframe src="https://drive.google.com/file/d/1VvcU-yUaJmElMZNyd28lyuVJhSMNfW6I/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 2</p>
-        <iframe src="https://drive.google.com/file/d/1Qgj8-4aRiDRm-mRHON4er2UiAEEbiwil/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 3</p>
-        <iframe src="https://drive.google.com/file/d/18FTzZW5nhUFiPnNI0uRLl9Bm-VPHr28x/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Video</span>
-        <p class="name">Video Tugas IPA</p>
-        <iframe src="https://drive.google.com/file/d/1mjKqMkNRWGBPDQF7XYlQkoi7dt--J3z2/preview" allow="autoplay"></iframe>
-      </div>
-      <!-- Salin salah satu blok .item di atas untuk menambah file lain -->
-    </div>
-  </section>
+function badgeHTML(sym){
+  if(sym.suit==='char') return `<div class="badge char"><span class="num">${sym.label}</span><span class="wan">萬</span></div>`;
+  if(sym.suit==='honor') return `<div class="badge honor" style="color:${sym.color}">${sym.label}</div>`;
+  if(sym.suit==='scatter') return `<div class="badge scatter"></div>`;
+  return `<div class="badge ${sym.suit}">${sym.label}</div>`;
+}
+function buildCell(){
+  const cell=document.createElement('div'); cell.className='cell';
+  cell.innerHTML='<div class="back">🀫</div><div class="face"></div>';
+  return cell;
+}
+function renderBoard(){
+  boardEl.innerHTML='';
+  const frag=document.createDocumentFragment();
+  for(let i=0;i<CELLS;i++) frag.appendChild(buildCell());
+  boardEl.appendChild(frag);
+}
+function setFace(cell,sym){ cell.querySelector('.face').innerHTML = badgeHTML(sym); cell.dataset.sym = sym.id; }
+function lockCell(cell,sym){
+  setFace(cell,sym); cell.classList.remove('rolling');
+  cell.classList.remove('common','rare','epic','legendary','scatter');
+  cell.classList.add('revealed', sym.rarity, 'locked');
+  setTimeout(()=>cell.classList.remove('locked'),300);
+}
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
 
-  <!-- TUGAS GEOGRAFI -->
-  <section class="subject geo">
-    <span class="tab">GEO</span>
-    <h2>Tugas Geografi</h2>
-    <p class="desc">Geser ke bawah untuk melihat semua file.</p>
-    <div class="stack">
-      <div class="empty">Belum ada file yang ditambahkan.</div>
-      <!--
-        Saat sudah ada file, ganti blok di atas dengan:
-        <div class="item">
-          <span class="kind">Foto</span>
-          <p class="name">Judul file</p>
-          <iframe src="https://drive.google.com/file/d/ID_FILE/preview" allow="autoplay"></iframe>
-        </div>
-      -->
-    </div>
-  </section>
+function updateUI(){
+  balanceEl.textContent = balance.toFixed(2);
+  spinCntEl.textContent = spinCount;
+  spinBtn.disabled = spinning || balance < COST;
+  resetBtn.disabled = spinning;
+  balanceEl.classList.toggle('low', balance < COST);
+  if(!spinning && balance < COST){ resultEl.textContent='⚠️ Saldo tidak cukup'; resultEl.className='result lose'; }
+}
+function updateInventory(){
+  if(inventory.length===0){ invList.innerHTML='<span class="inv-empty">Belum ada item</span>'; return; }
+  invList.innerHTML='';
+  inventory.forEach(it=>{
+    const el=document.createElement('div'); el.className='inv-item '+it.rarity;
+    el.innerHTML=`<span>${it.name}</span><span style="opacity:.65;">×${it.count}</span>`;
+    invList.appendChild(el);
+  });
+}
+function addInventory(name,rarity,qty){
+  const ex=inventory.find(i=>i.name===name && i.rarity===rarity);
+  if(ex) ex.count+=qty; else inventory.push({name,rarity,count:qty});
+  updateInventory();
+}
 
-  <!-- KOMUNITAS -->
-  <div class="stampsheet">
-    <h2>My Community</h2>
-    <div class="stamp-row">
-      <a class="stamp" href="https://developers.google.com/community" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Google Developers</span>
-      </a>
-    </div>
-  </div>
+function spawnConfetti(){
+  const colors=['#f59e0b','#fbbf24','#fcd34d','#fde68a','#f97316','#22c55e','#3b82f6'];
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    const size=6+Math.random()*9; c.style.width=size+'px'; c.style.height=size+'px';
+    c.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    c.style.animation=`fall ${1.8+Math.random()*1.5}s linear forwards`;
+    c.style.animationDelay=(Math.random()*0.4)+'s';
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4000);
+  }
+}
+function screenFlash(type){
+  const el=document.createElement('div'); el.className='screen-flash '+type;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),600);
+}
 
-  <!-- WEB LINKS LAINNYA -->
-  <div class="stampsheet">
-    <h2>My Other Web Links</h2>
-    <div class="stamp-row">
-      <a class="stamp" href="#" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Ganti dengan link 1</span>
-      </a>
-      <a class="stamp" href="#" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Ganti dengan link 2</span>
-      </a>
-    </div>
-  </div>
+function symLabel(sym){
+  if(sym.suit==='scatter') return '★ Scatter';
+  if(sym.suit==='honor') return sym.label;
+  const nm={dot:'筒',bam:'索',char:'萬'}[sym.suit];
+  return sym.label+nm;
+}
 
-  <div class="howto">
-    <strong>Cara pakai:</strong><br>
-    1. Buka file di Google Drive → klik kanan → <em>Bagikan</em> → set akses "Siapa saja yang memiliki link".<br>
-    2. Salin ID dari URL. Contoh: <code>https://drive.google.com/file/d/1AbCDeFGhijKLmNo/view</code> → ID = <code>1AbCDeFGhijKLmNo</code>.<br>
-    3. Ganti <code>ID_IPA_FOTO_1</code> dengan ID asli, dan isi bagian Geografi saat filenya sudah siap.<br>
-    4. Ganti <code>href="#"</code> di "My Other Web Links" dengan link asli kamu.<br>
-    5. Push ke GitHub lalu import project ke Vercel, atau jalankan <code>vercel deploy</code> lewat CLI.
-  </div>
-  <div class="site-footer">
-    Pengelola situs: <span class="owner">Rikaya Nurcahya</span>
-  </div>
+async function doSpin(){
+  if(spinning || balance<COST) return;
+  spinning=true; balance-=COST; spinCount++; updateUI();
+  resultEl.textContent='🀄 Mengocok...'; resultEl.className='result';
 
-</div>
+  const cells=[...boardEl.children];
+  cells.forEach(c=>c.classList.remove('revealed','locked','matched','common','rare','epic','legendary','scatter'));
+  const finals = cells.map(()=>weightedPick());
+  cells.forEach(c=>{ c.classList.add('rolling'); setFace(c, weightedPick()); });
+  const timers = cells.map(c=>setInterval(()=>setFace(c, weightedPick()), 60));
+
+  await sleep(300);
+  for(let row=0; row<4; row++){
+    await sleep(260);
+    for(let col=0; col<4; col++){
+      const idx=row*4+col;
+      clearInterval(timers[idx]);
+      lockCell(cells[idx], finals[idx]);
+    }
+    vibrate(10);
+  }
+  await sleep(300);
+
+  const counts={};
+  finals.forEach(s=>{ counts[s.id]=(counts[s.id]||0)+1; });
+  const wins=[];
+  Object.entries(counts).forEach(([id,count])=>{
+    if(count>=3){
+      const sym=SYMBOLS.find(s=>s.id===id);
+      const r=REWARD[sym.rarity];
+      const reward=r.base + r.extra*(count-3);
+      wins.push({sym,count,reward});
+    }
+  });
+
+  if(wins.length){
+    let total=0; const hasScatter=wins.some(w=>w.sym.rarity==='scatter');
+    const hasLegend=wins.some(w=>w.sym.rarity==='legendary');
+    wins.forEach(w=>{ total+=w.reward; addInventory(symLabel(w.sym), w.sym.rarity, w.count);
+      cells.forEach((c,i)=>{ if(finals[i].id===w.sym.id) c.classList.add('matched'); }); });
+    balance+=total;
+    const parts=wins.map(w=>`${symLabel(w.sym)}×${w.count}`).join(', ');
+    if(hasScatter){
+      resultEl.innerHTML=`⭐ SCATTER BONUS! ${parts} → <span style="color:#fde68a;">+${total.toFixed(2)}</span> ⭐`;
+      resultEl.className='result big-win'; spawnConfetti(); screenFlash('big'); vibrate([40,40,80]);
+    } else if(hasLegend){
+      resultEl.innerHTML=`🌟 PECAH! ${parts} → <span style="color:#fde68a;">+${total.toFixed(2)}</span> 🌟`;
+      resultEl.className='result big-win'; spawnConfetti(); screenFlash('big'); vibrate([40,40,80]);
+    } else {
+      resultEl.innerHTML=`🎉 PECAH! ${parts} → <span style="color:#ffd75e;">+${total.toFixed(2)}</span>`;
+      resultEl.className='result win'; screenFlash('win');
+    }
+  } else {
+    resultEl.innerHTML=`💨 ZONK! <span style="color:#fca5a5;">-${COST.toFixed(2)}</span>`;
+    resultEl.className='result lose'; screenFlash('lose');
+    boardEl.classList.add('shake'); setTimeout(()=>boardEl.classList.remove('shake'),500); vibrate(60);
+  }
+  spinning=false; updateUI();
+}
+
+function doReset(){
+  if(spinning) return;
+  balance=START_BALANCE; spinCount=0; inventory=[];
+  resultEl.textContent='🔄 Saldo direset. Tekan SPIN untuk mulai.'; resultEl.className='result';
+  [...boardEl.children].forEach(c=>c.classList.remove('revealed','rolling','locked','matched','common','rare','epic','legendary','scatter'));
+  updateInventory(); updateUI();
+}
+
+spinBtn.addEventListener('click', doSpin);
+resetBtn.addEventListener('click', doReset);
+renderBoard(); updateUI(); updateInventory();
+</script>
 </body>
 </html>
