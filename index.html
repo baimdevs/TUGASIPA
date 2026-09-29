@@ -1,21 +1,141 @@
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GACORMAXIMAL • RP 10K</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GACORMAXIMAL • RP 10K</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
+  body {
+    background:#0b0f1c; display:flex; justify-content:center; align-items:center;
+    min-height:100vh; padding:16px; color:#fff;
+  }
+  .site-card {
+    max-width:820px; width:100%;
+    background:linear-gradient(145deg,#12172b,#0a0e1a);
+    border-radius:36px; padding:28px 22px 30px;
+    border:1px solid #f7c94830;
+    box-shadow:0 25px 45px -12px #000;
+  }
+  .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:22px; }
+  .brand { display:flex; align-items:center; gap:10px; }
+  .brand-icon {
+    background:#f7c948; color:#0a0e1a; font-weight:900; font-size:22px;
+    width:44px; height:44px; border-radius:14px; display:flex; align-items:center;
+    justify-content:center; box-shadow:0 6px 0 #b38f1f;
+  }
+  .brand-text {
+    font-size:23px; font-weight:800;
+    background:linear-gradient(135deg,#f7e05e,#f7c948);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .price-badge {
+    background:#1e253c; padding:8px 16px; border-radius:60px;
+    border:1px solid #f7c94840; display:flex; align-items:center; gap:8px;
+  }
+  .price-label { font-size:12px; color:#9aa2b9; text-transform:uppercase; }
+  .price-value { font-size:22px; font-weight:900; color:#f7c948; }
 
-  </style>
+  .gacor-banner {
+    background:#f7c94810; border-left:5px solid #f7c948; padding:14px 18px;
+    border-radius:18px; margin-bottom:26px; display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:8px;
+  }
+  .gacor-text { font-weight:900; font-size:19px; color:#f7c948; }
+  .gacor-sub { color:#a9b2d0; font-size:12px; background:#1e253c; padding:6px 12px; border-radius:40px; }
+
+  .section-title { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .section-title h2 { font-size:17px; font-weight:700; }
+  .section-title span {
+    background:#f7c94820; padding:4px 12px; border-radius:30px; font-size:12px;
+    font-weight:600; color:#f7c948; border:1px solid #f7c94840;
+  }
+
+  .game-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
+  .game-card {
+    background:#141a2b; border-radius:22px; padding:18px 16px;
+    display:flex; align-items:center; gap:14px; border:1px solid #2c3550;
+    box-shadow:0 6px 0 #080c14; transition:.2s;
+  }
+  .game-card:hover { transform:translateY(-2px); border-color:#f7c94880; }
+  .game-icon {
+    width:56px; height:56px; background:#1e253c; border-radius:16px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-size:28px; border:1px solid #3a4568;
+  }
+  .game-info h3 { font-size:19px; font-weight:800; }
+  .game-info .sub { font-size:12px; color:#8a94b0; margin-top:4px; display:flex; align-items:center; gap:6px; }
+  .hot-dot { width:8px; height:8px; background:#f7c948; border-radius:10px; box-shadow:0 0 8px #f7c948; display:inline-block; }
+
+  .asset-note {
+    background:#0f1422; border-radius:16px; padding:14px 18px;
+    border:1px dashed #3a4568; font-size:13px; color:#9aa2b9;
+    display:flex; gap:12px; line-height:1.5; margin-bottom:26px;
+  }
+  .asset-note .icon { font-size:18px; background:#1e253c; border-radius:10px; padding:6px 8px; color:#f7c948; }
+
+  .footer-note {
+    text-align:center; font-size:11px; color:#4b5570;
+    border-top:1px solid #1e253c; padding-top:18px; letter-spacing:.5px;
+  }
+
+  @media (max-width:520px) {
+    .game-grid { grid-template-columns:1fr; }
+    .brand-text { font-size:19px; }
+    .price-value { font-size:19px; }
+  }
+</style>
 </head>
 <body>
-  <div class="site-card">
+<div class="site-card">
 
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">🎰</div>
+      <div class="brand-text">GACORMAXIMAL</div>
+    </div>
+    <div class="price-badge">
+      <span class="price-label">Min. DP</span>
+      <span class="price-value">RP. 10K</span>
+    </div>
   </div>
+
+  <div class="gacor-banner">
+    <span class="gacor-text">🔥 GACOR MAXIMAL</span>
+    <span class="gacor-sub">RTP tinggi • peluang menang besar</span>
+  </div>
+
+  <div class="section-title">
+    <h2>PILIHAN GAME</h2>
+    <span>PG SOFT</span>
+  </div>
+
+  <div class="game-grid">
+    <div class="game-card">
+      <div class="game-icon">🀄</div>
+      <div class="game-info">
+        <h3>Mahjong Ways</h3>
+        <div class="sub"><span class="hot-dot"></span> MJ • classic</div>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-icon">🐉</div>
+      <div class="game-info">
+        <h3>Mahjong Ways 2</h3>
+        <div class="sub"><span class="hot-dot"></span> MJ 2 • high volatility</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="asset-note">
+    <div class="icon">📦</div>
+    <div><strong>⚡ Asset gratis PG Soft</strong> — Untuk logo/gambar game asli (Mahjong Ways, MJ2, dll.), bisa diambil dari katalog resmi PG Soft atau sumber aset publik. Versi ini pakai ikon bawaan agar halaman tetap tampil tanpa koneksi eksternal.</div>
+  </div>
+
+  <div class="footer-note">
+    GACORMAXIMAL • min. RP 10K • pilihan game MJ & MJ2 • aset PG Soft
+  </div>
+</div>
 </body>
 </html>
