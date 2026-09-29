@@ -1,423 +1,113 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arsip 10-2 — Untuk Tugas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roket Kali (Demo)</title>
 <style>
-  :root{
-    --paper:#EFE9DC;
-    --paper-2:#E6DFCC;
-    --ink:#23262B;
-    --ink-soft:#5B5A52;
-    --line:#D6CDB4;
-    --ipa:#4C7A64;
-    --ipa-tint:#E4ECE6;
-    --geo:#B9822F;
-    --geo-tint:#F1E6D2;
-    --stamp:#3B4A82;
-    --stamp-tint:#E7E9F3;
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#070914;--card:#11152a;--line:#232a4a;--tx:#eef0ff;--mu:#8087ad;--ac:#7c5cff;--ok:#2be48a;--bad:#ff4d6d;--gold:#ffc857}
+*{box-sizing:border-box}html,body{background:var(--bg)}
+body{margin:0;color:var(--tx);font-family:system-ui,-apple-system,sans-serif;padding:14px;max-width:480px;margin:auto;background:radial-gradient(circle at 50% -10%,#221a52 0,var(--bg) 55%)}
+.c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top small{color:var(--mu);display:block;font-size:12px;letter-spacing:.5px}.top b{font-size:20px}
+#stage{position:relative;padding:0;overflow:hidden;background:linear-gradient(#0b0e22,#12173a)}
+canvas{display:block;width:100%;height:270px}
+#m{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;font-size:60px;font-weight:900;font-variant-numeric:tabular-nums;text-shadow:0 0 30px currentColor;transition:color .2s}
+#msg{font-size:14px;font-weight:600;margin-top:4px;text-align:center;padding:0 10px}
+#m.l{color:var(--bad)}#m.w{color:var(--ok)}
+.label{color:var(--mu);font-size:12px;letter-spacing:.5px;margin-bottom:6px;display:block}
+input{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#0a0d20;color:var(--tx);font-size:18px;font-weight:700;outline:none}
+input:focus{border-color:var(--ac)}
+.row{display:flex;gap:8px;margin:8px 0 12px}.row button{flex:1;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:#0a0d20;color:var(--tx);font-weight:600}
+.row button:active{background:var(--line)}
+#go{width:100%;padding:17px;font-size:18px;font-weight:800;letter-spacing:.5px;border:0;border-radius:14px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4a7dff);box-shadow:0 8px 24px #5b4bff55;transition:.15s}
+#go.cash{background:linear-gradient(135deg,#ffc857,#ff9f1c);color:#2a1a00;box-shadow:0 8px 24px #ffb70055}
+#go.wait{background:var(--line);box-shadow:none;color:var(--mu)}
+#go:active{transform:scale(.98)}
+#hist{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+#hist span{flex:none;padding:5px 10px;border-radius:20px;font-size:13px;font-weight:700;background:#0a0d20;border:1px solid var(--line)}
+.w{color:var(--ok)}.l{color:var(--bad)}
+.foot{text-align:center;color:var(--mu);font-size:12px}
+#lock{position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;background:radial-gradient(circle at 50% 0,#221a52,#070914 60%)}#lock h1{margin:0;font-size:26px}#lock input{max-width:320px;text-align:center;letter-spacing:2px;text-transform:uppercase}#lock button{width:100%;max-width:320px;padding:15px;border:0;border-radius:14px;font-size:17px;font-weight:800;color:#fff;background:linear-gradient(135deg,#7c5cff,#4a7dff)}#err{color:var(--bad);height:18px;font-size:14px}#bar{position:absolute;left:0;bottom:0;height:4px;width:0;background:linear-gradient(90deg,#7c5cff,#ffc857)}#log div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}#log small{color:var(--mu)}#rst{background:none;border:0;color:var(--mu);font-size:12px;text-decoration:underline;margin:0 auto;display:block}</style></head><body>
+<div id="lock"><div style="font-size:56px">🚀</div><h1>Roket Kali</h1><input id="code" placeholder="MASUKKAN KODE" autocomplete="off"><div id="err"></div><button id="ok">MASUK</button></div>
+<div class="c top"><div><small>SALDO DEMO</small><b id="bal">Rp 100.000</b></div><div style="text-align:right"><small>PROFIT</small><b id="pf">Rp 0</b></div></div>
+<div class="c" id="stage"><canvas id="cv"></canvas><div id="m">10s</div><div id="bar"></div></div>
+<div id="msg"></div>
+<div class="c" style="margin-top:12px">
+<span class="label">TARUHAN (Rp)</span><input id="bet" type="number" inputmode="numeric" value="1000">
+<div class="row"><button data-a="1000">1k</button><button data-a="5000">5k</button><button data-a="10000">10k</button><button id="mx">MAX</button></div>
+<span class="label">AUTO CASH-OUT DI (x) — OPSIONAL</span><input id="auto" type="number" step="0.1" placeholder="cth 1.5">
+<button id="go" style="margin-top:14px">PASANG TARUHAN</button></div>
+<div class="c"><span class="label">RIWAYAT</span><div id="hist"></div></div>
+<div class="c"><span class="label">RIWAYAT SALDO (TERSIMPAN)</span><div id="log"></div><button id="rst">Reset saldo & riwayat</button></div>
+<p class="foot">Simulasi saldo virtual — bukan uang asli.</p>
+<script>
+const $=id=>document.getElementById(id),f=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+const cv=$('cv'),ctx=cv.getContext('2d');let W,H,dpr=devicePixelRatio||1;
+function size(){W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+const stars=Array.from({length:50},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.5+.3}));
+const KEY='roket:v1',BASE=100000;
+let S={bal:BASE,hist:[],log:[]};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let start=0,crash=1,stake=0,state='bet',t=0,m=1,parts=[],exploded=false,cdEnd=performance.now()+10000;
+function upd(){$('bal').textContent=f(S.bal);const p=S.bal-BASE;$('pf').textContent=(p>0?'+':'')+f(p);$('pf').className=p>=0?'w':'l'}
+function renderHist(){$('hist').innerHTML=S.hist.map(x=>`<span class="${x>=2?'w':'l'}">${x.toFixed(2)}x</span>`).join('')||'<small style="color:var(--mu)">Belum ada</small>'}
+function renderLog(){$('log').innerHTML=S.log.map(e=>`<div><span class="${e.d>=0?'w':'l'}">${e.d>=0?'+':''}${f(e.d)} <small>${e.x?e.x.toFixed(2)+'x':'meledak'}</small></span><small>saldo ${f(e.b)}</small></div>`).join('')||'<small>Belum ada taruhan</small>'}
+function rec(d,x){S.log.unshift({d,x,b:S.bal});S.log=S.log.slice(0,20);save();renderLog()}
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>$('bet').value=b.dataset.a);
+$('mx').onclick=()=>$('bet').value=S.bal;
+function pt(tt,X,Y){return[24+tt/X*(W-48),H-24-(Math.exp(.12*tt)-1)/(Y-1)*(H-60)]}
+function draw(){
+  ctx.clearRect(0,0,W,H);const now=performance.now();
+  stars.forEach(s=>{ctx.globalAlpha=.4+.4*Math.sin(now/600+s.x*20);ctx.fillStyle='#fff';ctx.fillRect(s.x*W,s.y*H,s.s,s.s)});ctx.globalAlpha=1;
+  const X=Math.max(6,t*1.15),Y=Math.max(2,m*1.25);
+  ctx.strokeStyle='#ffffff10';ctx.lineWidth=1;for(let i=1;i<5;i++){ctx.beginPath();ctx.moveTo(0,H*i/5);ctx.lineTo(W,H*i/5);ctx.stroke()}
+  if(state==='run'||exploded){
+    const N=60,pts=[];for(let i=0;i<=N;i++)pts.push(pt(t*i/N,X,Y));
+    const col=exploded?'#ff4d6d':'#7c5cff';
+    const g=ctx.createLinearGradient(0,H,0,0);g.addColorStop(0,col+'00');g.addColorStop(1,col+'55');
+    ctx.beginPath();ctx.moveTo(pts[0][0],H-24);pts.forEach(p=>ctx.lineTo(p[0],p[1]));ctx.lineTo(pts[N][0],H-24);ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.strokeStyle=col;ctx.lineWidth=4;ctx.shadowColor=col;ctx.shadowBlur=14;ctx.lineCap='round';ctx.stroke();ctx.shadowBlur=0;
+    if(!exploded){const a=pts[N-1],b=pts[N],ang=Math.atan2(b[1]-a[1],b[0]-a[0]);
+      ctx.save();ctx.translate(b[0],b[1]);ctx.rotate(ang+Math.PI/4);ctx.font='34px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚀',0,0);ctx.restore();
+      const fl=ctx.createRadialGradient(b[0],b[1],0,b[0],b[1],26);fl.addColorStop(0,'#ffc85788');fl.addColorStop(1,'#ffc85700');ctx.fillStyle=fl;ctx.fillRect(b[0]-30,b[1]-30,60,60)}
+  } else if(state==='bet'){ctx.font='34px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚀',24+16,H-40)}
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.15;p.l-=.02;ctx.globalAlpha=Math.max(p.l,0);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill()});ctx.globalAlpha=1;parts=parts.filter(p=>p.l>0);
+}
+function boom(){const p=pt(t,Math.max(6,t*1.15),Math.max(2,m*1.25));for(let i=0;i<50;i++){const a=Math.random()*6.28,s=Math.random()*5+1;parts.push({x:p[0],y:p[1],vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:Math.random()*3+1,l:1,c:['#ff4d6d','#ffc857','#ff9f1c'][i%3]})}}
+function btn(x,c){$('go').textContent=x;$('go').className=c}
+function newBet(){state='bet';cdEnd=performance.now()+10000;exploded=false;parts=[];t=0;m=1;stake=0;$('m').className='';btn('PASANG TARUHAN','');$('msg').className='';$('msg').textContent=S.bal<=0?'Saldo habis — reset saldo di bawah':'Pasang taruhan atau lewati ronde ini'}
+function launch(){
+  crash=Math.max(1,Math.floor(97/(1-Math.random()))/100);
+  state='run';start=performance.now();$('bar').style.width='0';$('msg').className='';
+  if(stake){$('msg').textContent='Taruhan '+f(stake)+' terpasang';btn('CASH OUT','cash')}else{$('msg').textContent='Kamu tidak pasang — menonton';btn('MENONTON…','wait')}
+}
+function cash(x){const win=Math.floor(stake*x);S.bal+=win;rec(win-stake,x);$('m').className='w';$('msg').textContent='✅ Cash out '+x.toFixed(2)+'x → '+f(win)+' masuk';$('msg').className='w';stake=0;btn('MENUNGGU LEDAKAN…','wait');upd()}
+function loop(){
+  const now=performance.now();
+  if(state==='bet'){
+    const rem=Math.max(0,(cdEnd-now)/1000);$('m').textContent=Math.ceil(rem)+'s';$('bar').style.width=(rem/10*100)+'%';
+    if(rem<=0)launch();
+  }else if(state==='run'){
+    t=(now-start)/1000;m=Math.exp(.12*t);const a=parseFloat($('auto').value);
+    if(m>=crash){m=crash;t=Math.log(crash)/.12;state='end';exploded=true;boom();
+      $('m').textContent=crash.toFixed(2)+'x';$('m').className='l';
+      if(stake){rec(-stake,0);$('msg').textContent='💥 Meledak! Taruhan '+f(stake)+' hangus';$('msg').className='l'}else{$('msg').textContent='💥 Meledak di '+crash.toFixed(2)+'x';$('msg').className='l'}
+      S.hist.unshift(crash);S.hist=S.hist.slice(0,30);save();renderHist();stake=0;btn('RONDE BERIKUTNYA…','wait');upd();setTimeout(newBet,3000)}
+    else{if(stake&&a>1&&m>=a)cash(a);$('m').textContent=m.toFixed(2)+'x'}
   }
-  *{ box-sizing:border-box; }
-  html{ -webkit-font-smoothing:antialiased; }
-  body{
-    margin:0;
-    background:var(--paper);
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
-    background-size: 22px 22px;
-    color:var(--ink);
-    font-family:'Inter', -apple-system, sans-serif;
-    padding:48px 18px 80px;
-  }
-  h1,h2{ font-family:'Source Serif 4', Georgia, serif; margin:0; }
-
-  .sheet{ max-width:640px; margin:0 auto; }
-
-  /* ---------- site banner & footer ---------- */
-  .site-banner{
-    text-align:center;
-    margin-bottom:28px;
-  }
-  .site-banner .site-name{
-    font-family:'Space Mono', monospace;
-    font-size:0.78rem;
-    font-weight:700;
-    letter-spacing:0.06em;
-    color:var(--stamp);
-  }
-  .site-banner .site-tag{
-    font-size:0.8rem;
-    color:var(--ink-soft);
-    margin-top:2px;
-  }
-  .site-footer{
-    max-width:640px;
-    margin:36px auto 0;
-    text-align:center;
-    font-size:0.78rem;
-    color:var(--ink-soft);
-  }
-  .site-footer .owner{ color:var(--ink); font-weight:600; }
-
-  /* ---------- profile ---------- */
-  .card-profile{
-    background:var(--ink);
-    color:var(--paper);
-    border-radius:4px;
-    padding:26px 28px;
-    margin-bottom:52px;
-    position:relative;
-    overflow:hidden;
-  }
-  .card-profile::after{
-    content:"";
-    position:absolute;
-    right:-40px; top:-40px;
-    width:140px; height:140px;
-    border-radius:50%;
-    background:conic-gradient(from 90deg, var(--ipa), var(--geo), var(--stamp), var(--ipa));
-    opacity:0.18;
-  }
-  .card-profile h1{ font-size:1.5rem; font-weight:600; letter-spacing:0.01em; }
-  .card-profile .meta{
-    margin-top:8px;
-    font-family:'Space Mono', monospace;
-    font-size:0.78rem;
-    color:#C8C4B6;
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-  }
-
-  /* ---------- personal information ---------- */
-  .infocard{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:22px 24px;
-    margin-bottom:52px;
-  }
-  .infocard h2{ font-size:1.05rem; font-weight:600; margin-bottom:16px; }
-  .field-row{
-    display:flex;
-    gap:18px;
-    padding:11px 0;
-    border-top:1px solid var(--paper-2);
-  }
-  .field-row:first-of-type{ border-top:none; }
-  .field-label{
-    font-family:'Space Mono', monospace;
-    font-size:0.7rem;
-    letter-spacing:0.03em;
-    color:var(--ink-soft);
-    width:110px;
-    flex-shrink:0;
-    padding-top:2px;
-  }
-  .field-value{ font-size:0.9rem; color:var(--ink); }
-  .field-value.muted{ color:var(--ink-soft); font-style:italic; }
-  .redacted{
-    display:inline-block;
-    background:var(--ink);
-    color:transparent;
-    border-radius:2px;
-    padding:2px 8px;
-    user-select:none;
-    position:relative;
-    top:1px;
-  }
-  .field-note{
-    font-size:0.76rem;
-    color:var(--ink-soft);
-    margin-top:4px;
-  }
-  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
-  .chip{
-    font-size:0.8rem;
-    background:var(--stamp-tint);
-    color:var(--stamp);
-    padding:4px 11px;
-    border-radius:999px;
-  }
-
-  /* ---------- subject section with binder tab ---------- */
-  .subject{
-    position:relative;
-    margin:0 0 56px;
-    padding-top:22px;
-  }
-  .subject .tab{
-    display:inline-block;
-    font-family:'Space Mono', monospace;
-    font-size:0.72rem;
-    font-weight:700;
-    letter-spacing:0.04em;
-    color:#fff;
-    padding:6px 14px 6px 12px;
-    border-radius:3px 10px 3px 3px;
-    position:relative;
-    margin-bottom:14px;
-  }
-  .subject.ipa .tab{ background:var(--ipa); }
-  .subject.geo .tab{ background:var(--geo); }
-  .subject h2{ font-size:1.2rem; font-weight:600; margin-bottom:2px; }
-  .subject .desc{ color:var(--ink-soft); font-size:0.85rem; margin-bottom:18px; }
-
-  .stack{
-    max-height:460px;
-    overflow-y:auto;
-    padding:6px 6px 6px 2px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-  .item{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:14px;
-    transform:rotate(var(--tilt,0deg));
-    transition:transform .18s ease, box-shadow .18s ease;
-  }
-  .item:nth-child(odd){ --tilt:-0.5deg; }
-  .item:nth-child(even){ --tilt:0.45deg; }
-  .item:hover, .item:focus-within{
-    transform:rotate(0deg);
-    box-shadow:0 6px 18px rgba(30,25,10,0.12);
-  }
-  .item .kind{
-    font-family:'Space Mono', monospace;
-    font-size:0.66rem;
-    font-weight:700;
-    letter-spacing:0.03em;
-    padding:2px 8px;
-    border-radius:3px;
-    display:inline-block;
-    margin-bottom:9px;
-  }
-  .subject.ipa .item .kind{ background:var(--ipa-tint); color:var(--ipa); }
-  .subject.geo .item .kind{ background:var(--geo-tint); color:var(--geo); }
-  .item .name{ font-size:0.88rem; color:var(--ink-soft); margin:0 0 10px; }
-  .item iframe, .item img{ width:100%; border:none; border-radius:4px; display:block; background:#111; }
-  .item iframe{ height:400px; }
-  .item img{ max-height:400px; object-fit:contain; }
-
-  .empty{
-    border:1px dashed var(--line);
-    border-radius:6px;
-    padding:26px 18px;
-    text-align:center;
-    color:var(--ink-soft);
-    font-size:0.85rem;
-    background:rgba(255,255,255,0.4);
-  }
-
-  /* ---------- links / community as a stamp sheet ---------- */
-  .stampsheet{ margin-bottom:12px; }
-  .stampsheet h2{ font-size:1.05rem; font-weight:600; margin-bottom:14px; }
-  .stamp-row{ display:flex; flex-direction:column; gap:9px; }
-  .stamp{
-    background:var(--stamp-tint);
-    border:1px solid #C7CBE3;
-    border-radius:5px;
-    padding:11px 15px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    text-decoration:none;
-    color:var(--stamp);
-    font-size:0.9rem;
-    font-weight:500;
-  }
-  .stamp:hover{ background:#dfe2f2; }
-  .stamp .dot{
-    width:6px; height:6px; border-radius:50%;
-    background:var(--stamp); flex-shrink:0;
-  }
-  .stamp span.label{ flex:1; margin-left:10px; }
-
-  .howto{
-    max-width:640px;
-    margin:54px auto 0;
-    border-top:1px solid var(--line);
-    padding-top:18px;
-    font-size:0.78rem;
-    color:var(--ink-soft);
-    line-height:1.7;
-  }
-  .howto strong{ color:var(--ink); }
-  .howto code{
-    font-family:'Space Mono', monospace;
-    background:var(--paper-2);
-    padding:1px 6px;
-    border-radius:3px;
-    font-size:0.76rem;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .item{ transition:none; }
-  }
-</style>
-</head>
-<body>
-<div class="sheet">
-
-  <div class="site-banner">
-    <div class="site-name">ARSIP 10-2</div>
-    <div class="site-tag">Untuk tugas</div>
-  </div>
-
-  <div class="card-profile">
-    <h1>Rikaya Nurcahya</h1>
-    <div class="meta">
-      <span>Kelas X-2</span>
-      <span>Tanpa jabatan organisasi</span>
-    </div>
-  </div>
-
-  <!-- INFORMASI PRIBADI -->
-  <div class="infocard">
-    <h2>Informasi Pribadi</h2>
-    <div class="field-row">
-      <div class="field-label">SEKOLAH</div>
-      <div class="field-value">SMA Negeri 2 Cibinong</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">PRESTASI</div>
-      <div class="field-value muted">Belum diisi</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">ALAMAT</div>
-      <div>
-        <span class="redacted">Cibinong, Jawa Barat</span>
-        <p class="field-note">Alamat lengkap disensor demi privasi.</p>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">PENGALAMAN</div>
-      <div class="field-value">Pernah melakukan studi kasus psikologi.</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">SKILL</div>
-      <div class="chip-row">
-        <span class="chip">IT</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- STRUKTUR ORGANISASI KELAS -->
-  <div class="infocard">
-    <h2>Struktur Organisasi Kelas</h2>
-    <div class="field-row">
-      <div class="field-label">WALI KELAS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">KETUA KELAS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">SEKERTARIS</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">BENDAHARA</div>
-      <div class="field-value muted">Unknown</div>
-    </div>
-  </div>
-
-  <!-- TUGAS IPA -->
-  <section class="subject ipa">
-    <span class="tab">IPA</span>
-    <h2>Tugas IPA</h2>
-    <p class="desc">Geser ke bawah untuk melihat semua file.</p>
-    <div class="stack">
-      <div class="item">
-        <span class="kind">Dokumen</span>
-        <p class="name">PPT Tugas IPA</p>
-        <iframe src="https://drive.google.com/file/d/1UI0yVtQo6VTBmqqTphPCt8oC8uHN9gmk/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 1</p>
-        <iframe src="https://drive.google.com/file/d/1VvcU-yUaJmElMZNyd28lyuVJhSMNfW6I/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 2</p>
-        <iframe src="https://drive.google.com/file/d/1Qgj8-4aRiDRm-mRHON4er2UiAEEbiwil/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Foto</span>
-        <p class="name">Gambar 3</p>
-        <iframe src="https://drive.google.com/file/d/18FTzZW5nhUFiPnNI0uRLl9Bm-VPHr28x/preview" allow="autoplay"></iframe>
-      </div>
-      <div class="item">
-        <span class="kind">Video</span>
-        <p class="name">Video Tugas IPA</p>
-        <iframe src="https://drive.google.com/file/d/1mjKqMkNRWGBPDQF7XYlQkoi7dt--J3z2/preview" allow="autoplay"></iframe>
-      </div>
-      <!-- Salin salah satu blok .item di atas untuk menambah file lain -->
-    </div>
-  </section>
-
-  <!-- TUGAS GEOGRAFI -->
-  <section class="subject geo">
-    <span class="tab">GEO</span>
-    <h2>Tugas Geografi</h2>
-    <p class="desc">Geser ke bawah untuk melihat semua file.</p>
-    <div class="stack">
-      <div class="empty">Belum ada file yang ditambahkan.</div>
-      <!--
-        Saat sudah ada file, ganti blok di atas dengan:
-        <div class="item">
-          <span class="kind">Foto</span>
-          <p class="name">Judul file</p>
-          <iframe src="https://drive.google.com/file/d/ID_FILE/preview" allow="autoplay"></iframe>
-        </div>
-      -->
-    </div>
-  </section>
-
-  <!-- KOMUNITAS -->
-  <div class="stampsheet">
-    <h2>My Community</h2>
-    <div class="stamp-row">
-      <a class="stamp" href="https://developers.google.com/community" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Google Developers</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- WEB LINKS LAINNYA -->
-  <div class="stampsheet">
-    <h2>My Other Web Links</h2>
-    <div class="stamp-row">
-      <a class="stamp" href="#" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Ganti dengan link 1</span>
-      </a>
-      <a class="stamp" href="#" target="_blank" rel="noopener">
-        <span class="dot"></span><span class="label">Ganti dengan link 2</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="howto">
-    <strong>Cara pakai:</strong><br>
-    1. Buka file di Google Drive → klik kanan → <em>Bagikan</em> → set akses "Siapa saja yang memiliki link".<br>
-    2. Salin ID dari URL. Contoh: <code>https://drive.google.com/file/d/1AbCDeFGhijKLmNo/view</code> → ID = <code>1AbCDeFGhijKLmNo</code>.<br>
-    3. Ganti <code>ID_IPA_FOTO_1</code> dengan ID asli, dan isi bagian Geografi saat filenya sudah siap.<br>
-    4. Ganti <code>href="#"</code> di "My Other Web Links" dengan link asli kamu.<br>
-    5. Push ke GitHub lalu import project ke Vercel, atau jalankan <code>vercel deploy</code> lewat CLI.
-  </div>
-  <div class="site-footer">
-    Pengelola situs: <span class="owner">Rikaya Nurcahya</span>
-  </div>
-
-</div>
-</body>
-</html>
+  draw();requestAnimationFrame(loop)
+}
+$('go').onclick=()=>{
+  if(state==='run'){if(stake)cash(m);return}
+  if(state!=='bet')return;
+  if(stake){S.bal+=stake;stake=0;save();upd();btn('PASANG TARUHAN','');$('msg').textContent='Taruhan dibatalkan';return}
+  const b=Math.floor(+$('bet').value);
+  if(!(b>0)||b>S.bal){$('msg').textContent='Taruhan tidak valid / saldo kurang';$('msg').className='l';return}
+  S.bal-=b;stake=b;save();upd();$('msg').className='w';$('msg').textContent='Terpasang '+f(b)+' — ketuk lagi untuk batal';btn('BATALKAN TARUHAN','wait');
+};
+$('rst').onclick=()=>{if(state==='run'&&stake)return;S={bal:BASE,hist:[],log:[]};stake=0;save();upd();renderHist();renderLog();if(state==='bet')newBet()};
+function unlock(){if($('code').value.trim().toUpperCase().replace(/\s+/g,' ')==='ROKET MASK'){$('lock').style.display='none'}else{$('err').textContent='Kode salah'}}
+$('ok').onclick=unlock;$('code').onkeydown=e=>{if(e.key==='Enter')unlock()};
+upd();renderHist();renderLog();newBet();loop();
+</script></body></html>
