@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Chat - DeepSeek Style</title>
+    <title>AI Chat - DeepSeek Style with Firebase</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Google Fonts: Inter -->
@@ -60,11 +60,12 @@
           <h1 class="font-semibold text-sm text-slate-900 leading-tight">
             Anoman AI Assistant
           </h1>
-          <p class="text-xs text-slate-500">Model: deepseek-v4.1-flash</p>
+          <p class="text-xs text-slate-500">Model: deepseek-v4.1-flash (Firebase RTDB)</p>
         </div>
       </div>
-      <div class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-        ● Online
+      <div class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Online & Synced
       </div>
     </header>
 
@@ -73,8 +74,8 @@
       id="chat-container"
       class="flex-1 overflow-y-auto px-4 py-6 md:px-0 max-w-3xl w-full mx-auto space-y-6"
     >
-      <!-- Welcome Message / Initial State -->
-      <div class="flex items-start space-x-4 max-w-2xl mx-auto w-full">
+      <!-- Welcome Message / Initial State (Fallback jika database kosong) -->
+      <div id="welcome-message" class="flex items-start space-x-4 max-w-2xl mx-auto w-full">
         <div
           class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-semibold shrink-0 text-sm"
         >
@@ -83,7 +84,7 @@
         <div class="space-y-1 text-sm bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs leading-relaxed">
           <p class="font-medium text-slate-900">Halo! Ada yang bisa saya bantu hari ini?</p>
           <p class="text-slate-600">
-            Tuliskan pertanyaan atau perintah Anda di bawah untuk mulai mengobrol.
+            Percakapan Anda akan otomatis tersimpan ke Firebase Realtime Database.
           </p>
         </div>
       </div>
@@ -126,21 +127,39 @@
       </div>
     </footer>
 
-    <!-- JavaScript Handler -->
-    <script>
+    <!-- Firebase & Chat Logic -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+      import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDyJCI9Cd96KrBRA9oIeE8H2uqo14-VwsU",
+        authDomain: "database-7c569.firebaseapp.com",
+        databaseURL: "https://database-7c569-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "database-7c569",
+        storageBucket: "database-7c569.firebasestorage.app",
+        messagingSenderId: "865768447241",
+        appId: "1:865768447241:web:dec2a481fcc7a7397947d8",
+        measurementId: "G-HZY646942F"
+      };
+
+      // Inisialisasi Firebase & Realtime Database
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const messagesRef = ref(db, 'chats');
+
       const chatContainer = document.getElementById('chat-container');
       const chatForm = document.getElementById('chat-form');
       const userInput = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
+      const welcomeMessage = document.getElementById('welcome-message');
 
       const API_URL = 'https://api.anoman.io/v1/chat/completions';
       const API_KEY = 'anm-sk-SfWNfdzF1n3AjczM2K5OtyDjgkGtd4rmyZkMBjZgMG0';
       const MODEL_NAME = 'free/deepseek-v4.1-flash';
 
-      // Menyimpan riwayat percakapan
-      let messages = [
-        { role: 'system', content: 'You are a helpful AI assistant.' }
-      ];
+      let messageHistory = [];
+      let isFirstMessage = true;
 
       // Auto-resize textarea
       userInput.addEventListener('input', function () {
@@ -156,23 +175,38 @@
         }
       });
 
+      // Real-time listener: Mendengarkan pesan baru dari database secara otomatis
+      onChildAdded(messagesRef, (snapshot) => {
+        if (isFirstMessage) {
+          if (welcomeMessage) welcomeMessage.remove();
+          isFirstMessage = false;
+        }
+        const data = snapshot.val();
+        appendMessage(data.role, data.content);
+        messageHistory.push({ role: data.role, content: data.content });
+      });
+
       chatForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         const text = userInput.value.trim();
         if (!text) return;
 
-        // Tambahkan pesan user ke UI
-        appendMessage('user', text);
-        messages.push({ role: 'user', content: text });
-        
         userInput.value = '';
         userInput.style.height = 'auto';
         sendBtn.disabled = true;
 
-        // Buat elemen loading/typing indicator
+        // 1. Simpan pesan user ke Firebase Realtime Database
+        await push(messagesRef, {
+          role: 'user',
+          content: text,
+          timestamp: Date.now()
+        });
+
+        // 2. Buat elemen loading/typing indicator
         const loadingId = appendLoadingIndicator();
 
         try {
+          // Kirim riwayat percakapan lengkap ke API Anoman AI
           const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -181,7 +215,11 @@
             },
             body: JSON.stringify({
               model: MODEL_NAME,
-              messages: messages
+              messages: [
+                { role: 'system', content: 'You are a helpful AI assistant.' },
+                ...messageHistory,
+                { role: 'user', content: text }
+              ]
             })
           });
 
@@ -195,9 +233,12 @@
           // Hapus indikator loading
           document.getElementById(loadingId).remove();
 
-          // Tampilkan balasan AI dan simpan ke riwayat
-          appendMessage('assistant', reply);
-          messages.push({ role: 'assistant', content: reply });
+          // 3. Simpan balasan AI ke Firebase Realtime Database
+          await push(messagesRef, {
+            role: 'assistant',
+            content: reply,
+            timestamp: Date.now()
+          });
 
         } catch (error) {
           console.error(error);
@@ -227,7 +268,6 @@
             : 'bg-white text-slate-800 border-slate-200 rounded-tl-xs'
         }`;
         
-        // Render teks dengan newline terjaga
         bubble.style.whiteSpace = 'pre-wrap';
         bubble.textContent = text;
 
