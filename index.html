@@ -1,309 +1,215 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Chat - DeepSeek Style with Firebase</title>
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat AI</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      @keyframes pulse-slow {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.4;
-        }
-      }
-      .animate-pulse-slow {
-        animation: pulse-slow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-    </style>
   </head>
-  <body class="bg-[#f8f9fa] text-slate-800 h-screen flex flex-col">
-    <!-- Header -->
-    <header
-      class="bg-white border-b border-slate-200 py-3 px-6 flex items-center justify-between shadow-xs z-10"
-    >
-      <div class="flex items-center space-x-3">
-        <div
-          class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-semibold text-sm shadow-xs"
-        >
-          DS
-        </div>
-        <div>
-          <h1 class="font-semibold text-sm text-slate-900 leading-tight">
-            Anoman AI Assistant
-          </h1>
-          <p class="text-xs text-slate-500">Model: deepseek-v4.1-flash (Firebase RTDB)</p>
-        </div>
-      </div>
-      <div class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Online & Synced
-      </div>
+
+  <body class="flex h-screen flex-col bg-gray-50 text-gray-900">
+    <header class="border-b bg-white px-5 py-4">
+      <h1 class="font-semibold">Anoman AI</h1>
+      <p id="status" class="text-sm text-gray-500">Menghubungkan ke Firebase…</p>
     </header>
 
-    <!-- Main Chat Container -->
     <main
-      id="chat-container"
-      class="flex-1 overflow-y-auto px-4 py-6 md:px-0 max-w-3xl w-full mx-auto space-y-6"
-    >
-      <!-- Welcome Message / Initial State (Fallback jika database kosong) -->
-      <div id="welcome-message" class="flex items-start space-x-4 max-w-2xl mx-auto w-full">
-        <div
-          class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-semibold shrink-0 text-sm"
-        >
-          AI
-        </div>
-        <div class="space-y-1 text-sm bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs leading-relaxed">
-          <p class="font-medium text-slate-900">Halo! Ada yang bisa saya bantu hari ini?</p>
-          <p class="text-slate-600">
-            Percakapan Anda akan otomatis tersimpan ke Firebase Realtime Database.
-          </p>
-        </div>
-      </div>
-    </main>
+      id="chat"
+      class="mx-auto w-full max-w-3xl flex-1 space-y-4 overflow-y-auto p-4"
+    ></main>
 
-    <!-- Input Area -->
-    <footer class="bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa] to-transparent pt-4 pb-6 px-4">
-      <div class="max-w-3xl mx-auto">
-        <form
-          id="chat-form"
-          class="bg-white border border-slate-300 rounded-2xl shadow-sm focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all p-2 flex items-end"
-        >
-          <textarea
-            id="user-input"
-            rows="1"
-            placeholder="Ketik pesan Anda di sini..."
-            class="flex-1 resize-none border-0 bg-transparent focus:ring-0 focus:outline-none text-slate-800 text-sm p-2 max-h-32"
-            required
-          ></textarea>
-          <button
-            type="submit"
-            id="send-btn"
-            class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl p-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 ml-2"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              class="w-4 h-4"
-            >
-              <path
-                d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.252-7.325.75.75 0 000-1.153A28.859 28.859 0 003.105 2.289z"
-              />
-            </svg>
-          </button>
-        </form>
-        <p class="text-center text-xs text-slate-400 mt-2">
-          AI dapat membuat kesalahan. Periksa kembali informasi penting.
-        </p>
-      </div>
-    </footer>
+    <form id="form" class="mx-auto flex w-full max-w-3xl gap-2 p-4">
+      <textarea
+        id="input"
+        class="min-h-12 flex-1 resize-y rounded-xl border bg-white p-3"
+        placeholder="Tulis pesan…"
+        required
+      ></textarea>
+      <button
+        id="send"
+        class="self-end rounded-xl bg-emerald-600 px-5 py-3 text-white disabled:opacity-50"
+      >
+        Kirim
+      </button>
+    </form>
 
-    <!-- Firebase & Chat Logic -->
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-      import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+      import { initializeApp } from
+        "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        push,
+        query,
+        limitToLast,
+        onChildAdded,
+        get,
+      } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyDyJCI9Cd96KrBRA9oIeE8H2uqo14-VwsU",
         authDomain: "database-7c569.firebaseapp.com",
-        databaseURL: "https://database-7c569-default-rtdb.asia-southeast1.firebasedatabase.app",
+        databaseURL:
+          "https://database-7c569-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "database-7c569",
         storageBucket: "database-7c569.firebasestorage.app",
         messagingSenderId: "865768447241",
         appId: "1:865768447241:web:dec2a481fcc7a7397947d8",
-        measurementId: "G-HZY646942F"
+        measurementId: "G-HZY646942F",
       };
 
-      // Inisialisasi Firebase & Realtime Database
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
-      const messagesRef = ref(db, 'chats');
 
-      const chatContainer = document.getElementById('chat-container');
-      const chatForm = document.getElementById('chat-form');
-      const userInput = document.getElementById('user-input');
-      const sendBtn = document.getElementById('send-btn');
-      const welcomeMessage = document.getElementById('welcome-message');
+      // Satu ruang chat untuk contoh ini.
+      const messagesRef = ref(db, "chats/demo/messages");
+      const messagesQuery = query(messagesRef, limitToLast(100));
 
-      const API_URL = 'https://api.anoman.io/v1/chat/completions';
-      const API_KEY = 'anm-sk-SfWNfdzF1n3AjczM2K5OtyDjgkGtd4rmyZkMBjZgMG0';
-      const MODEL_NAME = 'free/deepseek-v4.1-flash';
+      const API_URL = "https://api.anoman.io/v1/chat/completions";
 
-      let messageHistory = [];
-      let isFirstMessage = true;
+      // Jangan taruh API key rahasia di frontend untuk website publik.
+      const API_KEY = "GANTI_DENGAN_API_KEY_BARU";
 
-      // Auto-resize textarea
-      userInput.addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
-      });
+      const chat = document.getElementById("chat");
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const sendButton = document.getElementById("send");
+      const status = document.getElementById("status");
 
-      // Submit via Enter (Shift+Enter untuk baris baru)
-      userInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          chatForm.requestSubmit();
-        }
-      });
+      const history = [];
+      const displayedIds = new Set();
+      let ready = false;
 
-      // Real-time listener: Mendengarkan pesan baru dari database secara otomatis
-      onChildAdded(messagesRef, (snapshot) => {
-        if (isFirstMessage) {
-          if (welcomeMessage) welcomeMessage.remove();
-          isFirstMessage = false;
-        }
-        const data = snapshot.val();
-        appendMessage(data.role, data.content);
-        messageHistory.push({ role: data.role, content: data.content });
-      });
+      function showMessage(role, content) {
+        const row = document.createElement("div");
+        row.className =
+          role === "user" ? "flex justify-end" : "flex justify-start";
 
-      chatForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const text = userInput.value.trim();
-        if (!text) return;
+        const bubble = document.createElement("div");
+        bubble.className =
+          "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 " +
+          (role === "user"
+            ? "bg-emerald-600 text-white"
+            : "border bg-white text-gray-900");
 
-        userInput.value = '';
-        userInput.style.height = 'auto';
-        sendBtn.disabled = true;
+        // textContent mencegah pesan diperlakukan sebagai HTML.
+        bubble.textContent = content;
+        row.appendChild(bubble);
+        chat.appendChild(row);
+        chat.scrollTop = chat.scrollHeight;
+      }
 
-        // 1. Simpan pesan user ke Firebase Realtime Database
-        await push(messagesRef, {
-          role: 'user',
-          content: text,
-          timestamp: Date.now()
+      function showError(message) {
+        showMessage("assistant", `Terjadi kesalahan: ${message}`);
+      }
+
+      // Ambil pesan lama dahulu supaya konteks AI benar saat halaman dibuka.
+      try {
+        const snapshot = await get(messagesQuery);
+
+        snapshot.forEach((child) => {
+          const message = child.val();
+          if (!message?.role || typeof message.content !== "string") return;
+
+          history.push({
+            role: message.role,
+            content: message.content,
+          });
+
+          displayedIds.add(child.key);
+          showMessage(message.role, message.content);
         });
 
-        // 2. Buat elemen loading/typing indicator
-        const loadingId = appendLoadingIndicator();
+        // Listener menerima pesan baru setelah data awal dimuat.
+        onChildAdded(messagesQuery, (child) => {
+          if (displayedIds.has(child.key)) return;
+
+          const message = child.val();
+          if (!message?.role || typeof message.content !== "string") return;
+
+          displayedIds.add(child.key);
+          history.push({
+            role: message.role,
+            content: message.content,
+          });
+          showMessage(message.role, message.content);
+        });
+
+        ready = true;
+        status.textContent = "Terhubung ke Firebase";
+      } catch (error) {
+        console.error("Firebase:", error);
+        status.textContent = "Firebase gagal terhubung";
+        showError(error.message);
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const text = input.value.trim();
+        if (!text || !ready) return;
+
+        if (!API_KEY || API_KEY === "GANTI_DENGAN_API_KEY_BARU") {
+          showError("Isi API_KEY untuk pengujian, atau gunakan backend.");
+          return;
+        }
+
+        sendButton.disabled = true;
+        input.value = "";
 
         try {
-          // Kirim riwayat percakapan lengkap ke API Anoman AI
+          await push(messagesRef, {
+            role: "user",
+            content: text,
+            timestamp: Date.now(),
+          });
+
           const response = await fetch(API_URL, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Authorization': `Bearer ${API_KEY}`,
-              'Content-Type': 'application/json'
+              Authorization: `Bearer ${API_KEY}`,
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: MODEL_NAME,
+              model: "free/deepseek-v4.1-flash",
               messages: [
-                { role: 'system', content: 'You are a helpful AI assistant.' },
-                ...messageHistory,
-                { role: 'user', content: text }
-              ]
-            })
+                {
+                  role: "system",
+                  content: "You are a helpful assistant. Reply in Indonesian.",
+                },
+                ...history,
+              ],
+            }),
           });
+
+          const result = await response.json();
 
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(
+              result?.error?.message ||
+                result?.message ||
+                `HTTP ${response.status}`,
+            );
           }
 
-          const data = await response.json();
-          const reply = data.choices[0].message.content;
+          const reply = result?.choices?.[0]?.message?.content;
+          if (typeof reply !== "string" || !reply.trim()) {
+            throw new Error("Respons API tidak berisi teks balasan.");
+          }
 
-          // Hapus indikator loading
-          document.getElementById(loadingId).remove();
-
-          // 3. Simpan balasan AI ke Firebase Realtime Database
           await push(messagesRef, {
-            role: 'assistant',
+            role: "assistant",
             content: reply,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
-
         } catch (error) {
-          console.error(error);
-          document.getElementById(loadingId).remove();
-          appendMessage('assistant', 'Maaf, terjadi kesalahan saat menghubungi server.');
+          console.error("Chat:", error);
+          showError(error.message);
         } finally {
-          sendBtn.disabled = false;
-          userInput.focus();
+          sendButton.disabled = false;
+          input.focus();
         }
       });
-
-      function appendMessage(role, text) {
-        const isUser = role === 'user';
-        const wrapper = document.createElement('div');
-        wrapper.className = `flex items-start space-x-4 max-w-2xl mx-auto w-full ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
-
-        const avatar = document.createElement('div');
-        avatar.className = `w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold shrink-0 text-sm ${
-          isUser ? 'bg-slate-700' : 'bg-emerald-600'
-        }`;
-        avatar.textContent = isUser ? 'R' : 'AI';
-
-        const bubble = document.createElement('div');
-        bubble.className = `text-sm p-4 rounded-2xl border leading-relaxed shadow-2xs max-w-[80%] ${
-          isUser
-            ? 'bg-emerald-600 text-white border-emerald-600 rounded-tr-xs'
-            : 'bg-white text-slate-800 border-slate-200 rounded-tl-xs'
-        }`;
-        
-        bubble.style.whiteSpace = 'pre-wrap';
-        bubble.textContent = text;
-
-        wrapper.appendChild(avatar);
-        wrapper.appendChild(bubble);
-        chatContainer.appendChild(wrapper);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      }
-
-      function appendLoadingIndicator() {
-        const id = 'loading-' + Date.now();
-        const wrapper = document.createElement('div');
-        wrapper.id = id;
-        wrapper.className = 'flex items-start space-x-4 max-w-2xl mx-auto w-full';
-
-        const avatar = document.createElement('div');
-        avatar.className = 'w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-semibold shrink-0 text-sm';
-        avatar.textContent = 'AI';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'bg-white text-slate-500 border border-slate-200 text-sm p-4 rounded-2xl rounded-tl-xs shadow-2xs flex items-center space-x-1.5 animate-pulse-slow';
-        
-        for (let i = 0; i < 3; i++) {
-          const dot = document.createElement('span');
-          dot.className = 'w-2 h-2 bg-slate-400 rounded-full inline-block animate-bounce';
-          dot.style.animationDelay = `${i * 0.2}s`;
-          bubble.appendChild(dot);
-        }
-
-        wrapper.appendChild(avatar);
-        wrapper.appendChild(bubble);
-        chatContainer.appendChild(wrapper);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-
-        return id;
-      }
     </script>
   </body>
 </html>
