@@ -3,39 +3,87 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chat AI</title>
+    <title>Chat AI - Anoman & Firebase</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+    </style>
   </head>
 
-  <body class="flex h-screen flex-col bg-gray-50 text-gray-900">
-    <header class="border-b bg-white px-5 py-4">
-      <h1 class="font-semibold">Anoman AI</h1>
-      <p id="status" class="text-sm text-gray-500">Menghubungkan ke Firebase…</p>
+  <body class="flex h-screen flex-col bg-[#f8f9fa] text-slate-800">
+    <!-- Header -->
+    <header class="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3 shadow-xs z-10">
+      <div class="flex items-center space-x-3">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-sm font-semibold text-white">
+          DS
+        </div>
+        <div>
+          <h1 class="text-sm font-semibold text-slate-900 leading-tight">Anoman AI Assistant</h1>
+          <p id="status" class="text-xs text-slate-500">Menghubungkan ke Firebase...</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600">
+        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Online
+      </div>
     </header>
 
+    <!-- Chat Container -->
     <main
       id="chat"
-      class="mx-auto w-full max-w-3xl flex-1 space-y-4 overflow-y-auto p-4"
+      class="mx-auto w-full max-w-3xl flex-1 space-y-4 overflow-y-auto px-4 py-6"
     ></main>
 
-    <form id="form" class="mx-auto flex w-full max-w-3xl gap-2 p-4">
-      <textarea
-        id="input"
-        class="min-h-12 flex-1 resize-y rounded-xl border bg-white p-3"
-        placeholder="Tulis pesan…"
-        required
-      ></textarea>
-      <button
-        id="send"
-        class="self-end rounded-xl bg-emerald-600 px-5 py-3 text-white disabled:opacity-50"
-      >
-        Kirim
-      </button>
-    </form>
+    <!-- Input Form -->
+    <footer class="bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa] to-transparent px-4 pt-4 pb-6">
+      <form id="form" class="mx-auto flex w-full max-w-3xl items-end rounded-2xl border border-slate-300 bg-white p-2 shadow-sm focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+        <textarea
+          id="input"
+          rows="1"
+          class="max-h-32 flex-1 resize-none border-0 bg-transparent p-2 text-sm text-slate-800 focus:outline-none focus:ring-0"
+          placeholder="Ketik pesan Anda di sini..."
+          required
+        ></textarea>
+        <button
+          id="send"
+          class="ml-2 shrink-0 rounded-xl bg-emerald-600 p-2.5 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="h-4 w-4"
+          >
+            <path
+              d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.252-7.325.75.75 0 000-1.153A28.859 28.859 0 003.105 2.289z"
+            />
+          </svg>
+        </button>
+      </form>
+      <p class="mt-2 text-center text-xs text-slate-400">
+        AI dapat membuat kesalahan. Periksa kembali informasi penting.
+      </p>
+    </footer>
 
+    <!-- Firebase & Logic Script -->
     <script type="module">
-      import { initializeApp } from
-        "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
       import {
         getDatabase,
         ref,
@@ -49,8 +97,7 @@
       const firebaseConfig = {
         apiKey: "AIzaSyDyJCI9Cd96KrBRA9oIeE8H2uqo14-VwsU",
         authDomain: "database-7c569.firebaseapp.com",
-        databaseURL:
-          "https://database-7c569-default-rtdb.asia-southeast1.firebasedatabase.app",
+        databaseURL: "https://database-7c569-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "database-7c569",
         storageBucket: "database-7c569.firebasestorage.app",
         messagingSenderId: "865768447241",
@@ -61,14 +108,11 @@
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      // Satu ruang chat untuk contoh ini.
       const messagesRef = ref(db, "chats/demo/messages");
       const messagesQuery = query(messagesRef, limitToLast(100));
 
       const API_URL = "https://api.anoman.io/v1/chat/completions";
-
-      // Jangan taruh API key rahasia di frontend untuk website publik.
-      const API_KEY = "GANTI_DENGAN_API_KEY_BARU";
+      const API_KEY = "anm-sk-SfWNfdzF1n3AjczM2K5OtyDjgkGtd4rmyZkMBjZgMG0";
 
       const chat = document.getElementById("chat");
       const form = document.getElementById("form");
@@ -80,22 +124,42 @@
       const displayedIds = new Set();
       let ready = false;
 
+      // Auto-resize textarea
+      input.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
+
+      // Submit via Enter (Shift+Enter untuk baris baru)
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
       function showMessage(role, content) {
-        const row = document.createElement("div");
-        row.className =
-          role === "user" ? "flex justify-end" : "flex justify-start";
+        const isUser = role === "user";
+        const wrapper = document.createElement("div");
+        wrapper.className = `flex items-start space-x-4 max-w-2xl mx-auto w-full ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
+
+        const avatar = document.createElement("div");
+        avatar.className = `w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold shrink-0 text-sm ${
+          isUser ? 'bg-slate-700' : 'bg-emerald-600'
+        }`;
+        avatar.textContent = isUser ? 'R' : 'AI';
 
         const bubble = document.createElement("div");
-        bubble.className =
-          "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 " +
-          (role === "user"
-            ? "bg-emerald-600 text-white"
-            : "border bg-white text-gray-900");
-
-        // textContent mencegah pesan diperlakukan sebagai HTML.
+        bubble.className = `text-sm p-4 rounded-2xl border leading-relaxed shadow-2xs max-w-[80%] whitespace-pre-wrap ${
+          isUser
+            ? 'bg-emerald-600 text-white border-emerald-600 rounded-tr-xs'
+            : 'bg-white text-slate-800 border-slate-200 rounded-tl-xs'
+        }`;
         bubble.textContent = content;
-        row.appendChild(bubble);
-        chat.appendChild(row);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        chat.appendChild(wrapper);
         chat.scrollTop = chat.scrollHeight;
       }
 
@@ -103,7 +167,7 @@
         showMessage("assistant", `Terjadi kesalahan: ${message}`);
       }
 
-      // Ambil pesan lama dahulu supaya konteks AI benar saat halaman dibuka.
+      // Ambil pesan lama dari Firebase
       try {
         const snapshot = await get(messagesQuery);
 
@@ -120,7 +184,7 @@
           showMessage(message.role, message.content);
         });
 
-        // Listener menerima pesan baru setelah data awal dimuat.
+        // Listener pesan baru secara real-time
         onChildAdded(messagesQuery, (child) => {
           if (displayedIds.has(child.key)) return;
 
@@ -149,21 +213,19 @@
         const text = input.value.trim();
         if (!text || !ready) return;
 
-        if (!API_KEY || API_KEY === "GANTI_DENGAN_API_KEY_BARU") {
-          showError("Isi API_KEY untuk pengujian, atau gunakan backend.");
-          return;
-        }
-
         sendButton.disabled = true;
         input.value = "";
+        input.style.height = 'auto';
 
         try {
+          // 1. Simpan pesan pengguna ke Firebase
           await push(messagesRef, {
             role: "user",
             content: text,
             timestamp: Date.now(),
           });
 
+          // 2. Kirim request ke Anoman AI dengan menyertakan riwayat
           const response = await fetch(API_URL, {
             method: "POST",
             headers: {
@@ -197,6 +259,7 @@
             throw new Error("Respons API tidak berisi teks balasan.");
           }
 
+          // 3. Simpan balasan AI ke Firebase
           await push(messagesRef, {
             role: "assistant",
             content: reply,
